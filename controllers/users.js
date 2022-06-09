@@ -7,11 +7,13 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  const { _id } = req.params;
-  User.findById(_id)
+  const { id } = req.params;
+  User.findById(id)
     .then((user) => {
+      console.log(req.params.id);
+      console.log(user);
       if (!user) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(400).send({ message: 'Пользователь не найден' });
       }
       return res.send({ data: user });
     })
