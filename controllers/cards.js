@@ -12,9 +12,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: _id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
+      if (err.name === 'ValidationError') res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -31,12 +29,9 @@ module.exports.deleteCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Карточка не найдена' });
-      }
-      if (err.name === 'InvalidId') {
-        return res.status(404).send({ message: err.message });
-      }
+      console.log(err.name);
+      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
+      if (err.name === 'InvalidId') res.status(404).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -54,12 +49,8 @@ module.exports.likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Карточка не найдена' });
-      }
-      if (err.name === 'InvalidId') {
-        return res.status(404).send({ message: err.message });
-      }
+      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
+      if (err.name === 'InvalidId') res.status(404).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -77,12 +68,8 @@ module.exports.dislikeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'InvalidId') {
-        return res.status(404).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Карточка не найдена' });
-      }
+      if (err.name === 'InvalidId') res.status(404).send({ message: err.message });
+      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
       return res.status(500).send({ message: err.message });
     });
 };
