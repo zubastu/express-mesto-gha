@@ -1,5 +1,11 @@
 const User = require('../models/user');
 
+const errorUser = (errorName, errorMessage) => {
+  const error = new Error(errorMessage.toString());
+  error.name = errorName.toString();
+  return error;
+};
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
@@ -9,21 +15,14 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   const { id } = req.params;
 
-  const error = new Error('Такого id не существует');
-  error.name = 'InvalidId';
-
   User.findById(id)
     .then((user) => {
-      if (!user) throw error;
+      if (!user) throw errorUser('InvalidId', 'Такого id не существует');
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Пользователь по данному id не найден' });
-      }
-      if (err.name === 'InvalidId') {
-        return res.status(404).send({ message: err.message });
-      }
+      if (err.name === 'CastError') return res.status(400).send({ message: 'Пользователь по данному id не найден' });
+      if (err.name === 'InvalidId') return res.status(404).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -33,9 +32,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -45,15 +42,11 @@ module.exports.patchUserInfo = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(_id, { $set: { name, about } }, { new: true, runValidators: true })
     .then((userInfo) => {
-      if (!userInfo) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
-      }
+      if (!userInfo) return res.status(404).send({ message: 'Пользователь не найден' });
       return res.send({ data: userInfo });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -63,15 +56,11 @@ module.exports.patchAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
     .then((userAvatar) => {
-      if (!userAvatar) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
-      }
+      if (!userAvatar) return res.status(404).send({ message: 'Пользователь не найден' });
       return res.send({ data: userAvatar });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
+      if (err.name === 'ValidationError') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
