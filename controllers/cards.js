@@ -17,7 +17,7 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { _id } = req.user;
-  Card.findOneAndDelete(_id)
+  Card.findByIdAndDelete(_id)
     .then((card) => checkBadData(card, res))
     .catch((err) => errorProcessing(err, res));
 };

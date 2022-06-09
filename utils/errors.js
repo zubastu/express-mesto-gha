@@ -14,6 +14,7 @@ module.exports.errorProcessing = (err, res) => {
 };
 
 module.exports.checkBadData = (data, res) => {
+  console.log();
   if (!data) {
     return res.status(NOT_FOUND).send({ message: 'Не найдено' });
   }
