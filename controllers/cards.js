@@ -21,10 +21,20 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { _id } = req.user;
+
+  const error = new Error('Такого id не существует');
+  error.name = 'InvalidId';
+
   Card.findOneAndDelete(_id)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) throw error;
+      res.send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Карточка не найдена' });
+      }
+      if (err.name === 'InvalidId') {
         return res.status(404).send({ message: 'Карточка не найдена' });
       }
       return res.status(500).send({ message: err.message });
