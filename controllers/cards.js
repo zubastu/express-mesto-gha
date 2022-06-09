@@ -24,7 +24,10 @@ module.exports.deleteCard = (req, res) => {
   error.name = 'InvalidId';
 
   Card.findOneAndDelete(_id)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) throw error;
+      return res.send({ data: card });
+    })
     .catch((err) => {
       console.log(err.name);
       if (err.name === 'InvalidId') return res.status(404).send({ message: err.message });
