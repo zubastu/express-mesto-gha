@@ -19,3 +19,19 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+module.exports.patchUserInfo = (req, res) => {
+  const { _id } = req.user;
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
+    .then((userInfo) => res.send({ data: userInfo }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.patchAvatar = (req, res) => {
+  const { _id } = req.user;
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
+    .then((userInfo) => res.send({ data: userInfo }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
