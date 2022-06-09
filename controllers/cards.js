@@ -15,22 +15,25 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { _id } = req.body;
+  const { _id } = req.user;
+
   Card.findOneAndDelete(_id)
     .then((cards) => res.send({ data: cards }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.setLike = (req, res) => {
-  const { _id } = req.body;
-  Card.findOneAndDelete(_id)
-    .then((cards) => res.send({ data: cards }))
+  const { _id } = req.user;
+  const { cardId } = req.params;
+  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } })
+    .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.removeLike = (req, res) => {
-  const { _id } = req.body;
-  Card.findOneAndDelete(_id)
-    .then((cards) => res.send({ data: cards }))
+  const { _id } = req.user;
+  const { cardId } = req.params;
+  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } })
+    .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
