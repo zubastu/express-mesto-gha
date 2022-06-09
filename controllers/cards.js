@@ -1,5 +1,11 @@
 const Card = require('../models/card');
 
+const errorCard = (errorName, errorMessage) => {
+  const error = new Error(errorMessage.toString());
+  error.name = errorName.toString();
+  return error;
+};
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
@@ -19,19 +25,15 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { _id } = req.user;
-
-  const error = new Error('Такого id не существует');
-  error.name = 'InvalidId';
-
   Card.findOneAndDelete(_id)
     .then((card) => {
-      if (!card) throw error;
+      if (req.params.cardId.length < 24) throw errorCard('UndefinedId', 'Такого id не существует');
+      if (!card) throw errorCard('InvalidId', 'Карточка не найдена');
       return res.send({ data: card });
     })
     .catch((err) => {
-      console.log(err.name);
-      if (err.name === 'InvalidId') return res.status(404).send({ message: err.message });
-      if (err.name === 'CastError') return res.status(400).send({ message: 'Карточка не найдена' });
+      if (err.name === 'UndefinedId') return res.status(404).send({ message: err.message });
+      if (err.name === 'InvalidId') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -40,17 +42,14 @@ module.exports.likeCard = (req, res) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
-  const error = new Error('Такого id не существует');
-  error.name = 'InvalidId';
-
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true, runValidators: true })
     .then((card) => {
-      if (!card) throw error;
+      if (!card) throw errorCard('InvalidId', 'Карточка не найдена');
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'InvalidId') return res.status(404).send({ message: err.message });
-      if (err.name === 'CastError') return res.status(400).send({ message: 'Карточка не найдена' });
+      if (err.name === 'CastError') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -59,17 +58,14 @@ module.exports.dislikeCard = (req, res) => {
   const { _id } = req.user;
   const { cardId } = req.params;
 
-  const error = new Error('Такого id не существует');
-  error.name = 'InvalidId';
-
   Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true, runValidators: true })
     .then((card) => {
-      if (!card) throw error;
+      if (!card) throw errorCard('InvalidId', 'Карточка не найдена');
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'InvalidId') return res.status(404).send({ message: err.message });
-      if (err.name === 'CastError') return res.status(400).send({ message: 'Карточка не найдена' });
+      if (err.name === 'CastError') return res.status(400).send({ message: err.message });
       return res.status(500).send({ message: err.message });
     });
 };
