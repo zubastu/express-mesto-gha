@@ -8,30 +8,62 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   const { _id } = req.params;
-  User.findOne(_id)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+  User.findById(_id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.patchUserInfo = (req, res) => {
   const { _id } = req.user;
   const { avatar } = req.body;
   User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
-    .then((userInfo) => res.send({ data: userInfo }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((userInfo) => {
+      if (!userInfo) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      return res.send({ data: userInfo });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.patchAvatar = (req, res) => {
   const { _id } = req.user;
   const { avatar } = req.body;
   User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
-    .then((userInfo) => res.send({ data: userInfo }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((userAvatar) => {
+      if (!userAvatar) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      return res.send({ data: userAvatar });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
