@@ -9,16 +9,12 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   const { id } = req.params;
   User.findById(id)
-    .then((user) => {
-      console.log(req.params.id);
-      console.log(user);
-      if (!user) {
-        return res.status(400).send({ message: 'Пользователь не найден' });
-      }
-      return res.send({ data: user });
-    })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Пользователь по данному id не найден' });
+      }
+      return res.status(500).send({ message: err.message });
     });
 };
 
