@@ -9,16 +9,8 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   const { id } = req.params;
   User.findById(id)
-    .then((user) => {
-      if (id !== 'String') {
-        const error = new Error('Не корректный id, он должен состоять из строки');
-        error.name = 'InvalidId';
-        return error;
-      }
-      return res.send({ data: user });
-    })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
-      console.log(err.name);
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Пользователь по данному id не найден' });
       }
