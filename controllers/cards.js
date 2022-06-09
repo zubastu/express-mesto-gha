@@ -30,8 +30,8 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       console.log(err.name);
-      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
       if (err.name === 'InvalidId') res.status(404).send({ message: err.message });
+      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
       return res.status(500).send({ message: err.message });
     });
 };
@@ -49,8 +49,8 @@ module.exports.likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
       if (err.name === 'InvalidId') res.status(404).send({ message: err.message });
+      if (err.name === 'CastError') res.status(400).send({ message: 'Карточка не найдена' });
       return res.status(500).send({ message: err.message });
     });
 };
