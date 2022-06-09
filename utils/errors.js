@@ -4,7 +4,7 @@ const DEFAULT_ERROR_CODE = 500;
 
 module.exports.errorProcessing = (err, res) => {
   switch (err.name) {
-    case 'ValidationMessage':
+    case 'ValidationError':
       return res.status(BAD_REQ).send({ message: 'Ошибка передачи данных, все поля должны быть заполнены корректно' });
     case 'CastError':
       return res.status(BAD_REQ).send({ message: 'Не найдено по входным данным' });
