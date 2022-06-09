@@ -41,8 +41,8 @@ module.exports.createUser = (req, res) => {
 
 module.exports.patchUserInfo = (req, res) => {
   const { _id } = req.user;
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(_id, { $set: { name, about } }, { new: true, runValidators: true })
     .then((userInfo) => {
       if (!userInfo) {
         return res.status(404).send({ message: 'Пользователь не найден' });
