@@ -11,6 +11,7 @@ module.exports.getUser = (req, res) => {
 
   const error = new Error('Такого id не существует');
   error.name = 'InvalidId';
+
   User.findById(id)
     .then((user) => {
       if (!user) throw error;
