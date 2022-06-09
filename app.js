@@ -27,13 +27,7 @@ app.use('/users', routeUsers);
 
 app.use('/cards', routeCards);
 
-app.get('/', (req, res) => {
-  res.send('<h1>Корневая страница</h1>');
-});
-
-app.get('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
-});
+app.use((req, res) => res.status(404).send({ message: 'Не найдено' }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true, family: 4 })
   .then(() => {
