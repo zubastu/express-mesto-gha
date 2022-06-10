@@ -8,6 +8,7 @@ module.exports.errorProcessing = (err, res) => {
       // eslint-disable-next-line no-underscore-dangle
       return res.status(BAD_REQ).send({ message: `Ошибка передачи данных, все поля должны быть заполнены корректно: ${err._message}` });
     case 'CastError':
+      // eslint-disable-next-line no-underscore-dangle
       return res.status(BAD_REQ).send({ message: `Не найдено по входным данным: ${err._message}` });
     default:
       return res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
