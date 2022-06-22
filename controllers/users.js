@@ -34,13 +34,16 @@ module.exports.createUser = (req, res) => {
 
   User.findOne({ email }).then((user) => {
     if (user) {
-      res.status(403).send({ message: 'Пользователь с таким email уже есть!' });
+      res.status(409).send({ message: 'Пользователь с таким email уже есть!' });
     } else {
       bcrypt.hash(password, 5).then((hash) => User.create({
         name, about, avatar, email, password: hash,
       }))
         .then((userInfo) => checkBadData(userInfo, res))
-        .catch((err) => errorProcessing(err, res));
+        .catch((err) => {
+          console.log(err.name);
+          errorProcessing(err, res);
+        });
     }
   });
 };

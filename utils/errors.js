@@ -1,6 +1,8 @@
 const BAD_REQ = 400;
 const WRONG_PASS_OR_EMAIL = 401;
+const WRONG_OWNER = 403;
 const NOT_FOUND = 404;
+const REGISTRATION_WITH_USED_EMAIL = 409;
 const DEFAULT_ERROR_CODE = 500;
 
 module.exports.errorProcessing = (err, res) => {
