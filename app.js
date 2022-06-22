@@ -6,6 +6,9 @@ const routeUsers = require('./routes/users');
 
 const routeCards = require('./routes/cards');
 
+const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -14,12 +17,10 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '629c78948e5515e73f8e9d1d', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use('/users', routeUsers);
 
