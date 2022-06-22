@@ -71,33 +71,12 @@ module.exports.login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      const { name, email, avatar } = user;
+      const { name, userEmail, avatar } = user;
       return res.send({
-        name, email, avatar, token,
+        name, userEmail, avatar, token,
       });
     })
     .catch((err) => res
       .status(401)
       .send({ message: err.message }));
 };
-
-class customError extends Error {
-  constructor(message, name, statusCode) {
-    super(message);
-    this.name = name;
-    this.message = message;
-    this.statusCode = statusCode;
-  }
-}
-
-function errorProcess(err, res, req) {
-  if (err.name === 'SomeError') {
-    return res.status(err.statusCode).send({ mesage: err.message });
-  }
-}
-
-User.findOne(sdfsdf).then((user) => {
-  if (user.name === 'Вася Пупкин') {
-    throw new customError('Сообщение ошибки', 'Ошибка Васи Пупкина', '5000500');
-  }
-}).catch((err) => errorProcess(err));
