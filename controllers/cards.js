@@ -24,7 +24,7 @@ module.exports.deleteCard = (req, res, next) => {
     if (!card) {
       throw new NotFoundErr('Не найдено');
     }
-    if (card.owner !== _id) {
+    if (card.owner.toString() !== _id) {
       throw new WrongOwner('Чтобы удалить карточку необходимо быть ее создателем');
     }
     return card;
