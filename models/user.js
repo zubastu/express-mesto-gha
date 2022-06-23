@@ -12,13 +12,21 @@ const userSchema = new mongoose.Schema({
   },
   about: {
     type: String,
-    default: 'Исследователь ',
+    default: 'Исследователь',
     minlength: 2,
     maxlength: 30,
   },
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (value) => {
+        if (validator.isURL(value)) {
+          throw new Error('Поле avatar должно быть корректным');
+        }
+      },
+      message: 'Эта ссылка не подходит',
+    },
   },
   email: {
     type: String,
