@@ -1,44 +1,12 @@
+const NotFoundErr = require('./NotFound');
+const WrongPassword = require('./WrongPassword');
+
 const BAD_REQ = 400;
 const WRONG_PASS_OR_EMAIL = 401;
 const WRONG_OWNER = 403;
 const NOT_FOUND = 404;
 const REGISTRATION_WITH_USED_EMAIL = 409;
 const DEFAULT_ERROR_CODE = 500;
-
-class badRequest extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'BadRequest';
-  }
-}
-
-class wrongPassword extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'WrongPassword';
-  }
-}
-
-class wrongOwner extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'WrongOwner';
-  }
-}
-
-class notFound extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'NotFound';
-  }
-}
-
-class usedEmail extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'UsedEmail';
-  }
-}
 
 module.exports.errorProcessing = (err, res) => {
   switch (err.name) {
@@ -63,18 +31,14 @@ module.exports.errorProcessing = (err, res) => {
 
 module.exports.checkBadData = (data, res) => {
   if (!data) {
-    return res.status(NOT_FOUND).send({ message: 'Не найдено' });
+    return new NotFoundErr('Не найдено');
   }
   return res.send({ data });
 };
 
 module.exports.checkUser = (data, res) => {
   if (!data) {
-    return res.status(WRONG_PASS_OR_EMAIL).send({ message: 'Не правильная почта или пароль' });
+    return new WrongPassword('Неправильная почта или пароль');
   }
   return res.send({ data });
-};
-
-module.exports = {
-  badRequest, wrongPassword, wrongOwner, notFound, usedEmail,
 };

@@ -2,11 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { checkBadData, errorProcessing } = require('../utils/errors');
+const ValidationError = require('../utils/ValidationError');
+const UsedEmail = require('../utils/UsedEmail');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => checkBadData(users, res))
-    .catch((err) => errorProcessing(err, res));
+    .catch((err) => next(err));
 };
 
 module.exports.getUser = (req, res) => {
@@ -16,14 +18,14 @@ module.exports.getUser = (req, res) => {
     .catch((err) => errorProcessing(err, res));
 };
 
-module.exports.getUserSelf = (req, res) => {
+module.exports.getUserSelf = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => checkBadData(user, res))
-    .catch((err) => errorProcessing(err, res));
+    .catch((err) => next(err));
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -34,41 +36,37 @@ module.exports.createUser = (req, res) => {
 
   User.findOne({ email }).then((user) => {
     if (user) {
-      res.status(409).send({ message: 'Пользователь с таким email уже есть!' });
-    } else {
-      bcrypt.hash(password, 5).then((hash) => User.create({
-        name, about, avatar, email, password: hash,
-      }))
-        .then((userInfo) => checkBadData(userInfo, res))
-        .catch((err) => {
-          console.log(err.name);
-          errorProcessing(err, res);
-        });
+      return new UsedEmail('Пользователь с таким email уже есть!');
     }
+    return bcrypt.hash(password, 5).then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+      .then((userInfo) => checkBadData(userInfo, res))
+      .catch((err) => next(err));
   });
 };
 
-module.exports.patchUserInfo = (req, res) => {
+module.exports.patchUserInfo = (req, res, next) => {
   const { _id } = req.user;
   const { name, about } = req.body;
   User.findByIdAndUpdate(_id, { $set: { name, about } }, { new: true, runValidators: true })
     .then((userInfo) => checkBadData(userInfo, res))
-    .catch((err) => errorProcessing(err, res));
+    .catch((err) => next(err));
 };
 
-module.exports.patchAvatar = (req, res) => {
+module.exports.patchAvatar = (req, res, next) => {
   const { _id } = req.user;
   const { avatar } = req.body;
   User.findByIdAndUpdate(_id, { $set: { avatar } }, { new: true, runValidators: true })
     .then((userAvatar) => checkBadData(userAvatar, res))
-    .catch((err) => errorProcessing(err, res));
+    .catch((err) => next(err));
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).send({ message: 'Email или пароль не могут быть пустыми' });
+    return new ValidationError('Email или пароль не могут быть пустыми');
   }
 
   return User.findUserByCredentials(email, password)
@@ -79,7 +77,5 @@ module.exports.login = (req, res) => {
         name, userEmail, avatar, token,
       });
     })
-    .catch((err) => res
-      .status(401)
-      .send({ message: err.message }));
+    .catch((err) => next(err));
 };
