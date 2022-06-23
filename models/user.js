@@ -6,7 +6,7 @@ const WrongPassword = require('../utils/WrongPassword');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: 'Жак-ив Кусто',
+    default: 'Жак-Ив Кусто',
     minlength: 2,
     maxlength: 30,
   },
