@@ -56,7 +56,8 @@ module.exports.createUser = (req, res, next) => {
         checkBadData(newUserInfo, res);
       })
       .catch((err) => next(err));
-  });
+  })
+    .catch((err) => next(err));
 };
 
 module.exports.patchUserInfo = (req, res, next) => {
