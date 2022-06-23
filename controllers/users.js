@@ -34,29 +34,32 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  User.findOne({ email }).then((user) => {
-    if (!email) {
-      throw new ValidationError('Email не может быть пустым');
-    }
+  User.findOne({ email })
+    .then((user) => {
+      if (!email) {
+        const err = new ValidationError('Email не может быть пустым');
+        return next(err);
+      }
+      if (user) {
+        const err = new UsedEmail('Пользователь с таким email уже есть!');
+        return next(err);
+      }
 
-    if (user) {
-      throw new UsedEmail('Пользователь с таким email уже есть!');
-    }
-    return bcrypt.hash(password, 5).then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-      .then((userInfo) => {
-        const newUserInfo = {
-          name: userInfo.name,
-          about: userInfo.about,
-          avatar: userInfo.avatar,
-          _id: userInfo._id,
-          email: userInfo.email,
-        };
-        checkBadData(newUserInfo, res);
-      })
-      .catch((err) => next(err));
-  })
+      return bcrypt.hash(password, 5).then((hash) => User.create({
+        name, about, avatar, email, password: hash,
+      }))
+        .then((userInfo) => {
+          const newUserInfo = {
+            name: userInfo.name,
+            about: userInfo.about,
+            avatar: userInfo.avatar,
+            _id: userInfo._id,
+            email: userInfo.email,
+          };
+          checkBadData(newUserInfo, res);
+        })
+        .catch((err) => next(err));
+    })
     .catch((err) => next(err));
 };
 
