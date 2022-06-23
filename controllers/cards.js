@@ -1,6 +1,7 @@
 const Card = require('../models/card');
-const { checkBadData, checkDeleteCard } = require('../utils/errors');
+const { checkBadData } = require('../utils/errors');
 const WrongOwner = require('../utils/WrongOwner');
+const NotFoundErr = require('../utils/NotFound');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -19,13 +20,19 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
-  Card.findByIdAndDelete(cardId)
-    .then((card) => {
-      if (card.owner !== _id) {
-        throw new WrongOwner('Чтобы удалить карточку необходимо быть ее создателем');
-      }
-      checkDeleteCard(card, res);
-    })
+  Card.findById(cardId).then((card) => {
+    if (!card) {
+      throw new NotFoundErr('Не найдено');
+    }
+    if (card.owner !== _id) {
+      throw new WrongOwner('Чтобы удалить карточку необходимо быть ее создателем');
+    }
+    return card;
+  }).then((selectedCard) => {
+    Card.deleteOne({ _id: selectedCard._id })
+      .then(() => res.send({ message: 'Успешно' }))
+      .catch((err) => next(err));
+  })
     .catch((err) => next(err));
 };
 

@@ -45,10 +45,3 @@ module.exports.checkUser = (data, res) => {
   }
   return res.send({ data });
 };
-
-module.exports.checkDeleteCard = (card, res) => {
-  if (!card) {
-    throw new NotFoundErr('Не найдено');
-  }
-  return res.send({ message: 'Успешно' });
-};
