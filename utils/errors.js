@@ -36,7 +36,7 @@ module.exports.checkBadData = (data, res) => {
   if (!data) {
     throw new NotFoundErr('Не найдено');
   }
-  return res.send({ data });
+  return res.send({ message: 'Успешно', data });
 };
 
 module.exports.checkUser = (data, res) => {
