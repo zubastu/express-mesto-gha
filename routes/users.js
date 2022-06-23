@@ -22,10 +22,6 @@ router.patch('/me/avatar', celebrate({
   }),
 }), patchAvatar);
 
-router.get('/:id', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().hex().length(24).required(),
-  }),
-}), getUser);
+router.get('/:id', getUser);
 
 module.exports = router;
