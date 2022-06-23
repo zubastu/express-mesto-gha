@@ -35,13 +35,26 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   User.findOne({ email }).then((user) => {
+    if (!email) {
+      throw new ValidationError('Email не может быть пустым');
+    }
+
     if (user) {
-      return new UsedEmail('Пользователь с таким email уже есть!');
+      throw new UsedEmail('Пользователь с таким email уже есть!');
     }
     return bcrypt.hash(password, 5).then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-      .then((userInfo) => checkBadData(userInfo, res))
+      .then((userInfo) => {
+        const newUserInfo = {
+          name: userInfo.name,
+          about: userInfo.about,
+          avatar: userInfo.avatar,
+          _id: userInfo._id,
+          email: userInfo.email,
+        };
+        checkBadData(newUserInfo, res);
+      })
       .catch((err) => next(err));
   });
 };
@@ -66,7 +79,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return new ValidationError('Email или пароль не могут быть пустыми');
+    throw new ValidationError('Email или пароль не могут быть пустыми');
   }
 
   return User.findUserByCredentials(email, password)
