@@ -22,7 +22,7 @@ module.exports.errorProcessing = (err, res) => {
     case 'AuthorizationRequired':
       return res.status(AUTH_REQ).send({ message: `Ошибка: ${err.message}` });
     case 'WrongOwner':
-      return res.status(WRONG_OWNER).send({ message: `Не найдено по входным данным: ${err.message}` });
+      return res.status(WRONG_OWNER).send({ message: `Ошибка: ${err.message}` });
     case 'NotFound':
       return res.status(NOT_FOUND).send({ message: `Не найдено по входным данным: ${err.message}` });
     case 'UsedEmail':
