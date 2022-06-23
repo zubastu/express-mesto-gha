@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { checkBadData, errorProcessing } = require('../utils/errors');
+const { checkBadData } = require('../utils/errors');
 const ValidationError = require('../utils/ValidationError');
 const UsedEmail = require('../utils/UsedEmail');
 
@@ -11,11 +11,11 @@ module.exports.getUsers = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
     .then((user) => checkBadData(user, res))
-    .catch((err) => errorProcessing(err, res));
+    .catch((err) => next(err));
 };
 
 module.exports.getUserSelf = (req, res, next) => {
