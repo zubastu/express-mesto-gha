@@ -90,6 +90,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       const { name, userEmail, avatar } = user;
+
       return res.send({
         name, userEmail, avatar, token,
       });
