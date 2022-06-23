@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { checkBadData } = require('../utils/errors');
+const { checkBadData, checkDeleteCard } = require('../utils/errors');
 const WrongOwner = require('../utils/WrongOwner');
 
 module.exports.getCards = (req, res, next) => {
@@ -21,11 +21,10 @@ module.exports.deleteCard = (req, res, next) => {
   const { _id } = req.user;
   Card.findByIdAndDelete(cardId)
     .then((card) => {
-      console.log(card);
       if (card.owner !== _id) {
         throw new WrongOwner('Чтобы удалить карточку необходимо быть ее создателем');
       }
-      checkBadData(card, res);
+      checkDeleteCard(card, res);
     })
     .catch((err) => next(err));
 };
