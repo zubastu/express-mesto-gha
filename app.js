@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const routeUsers = require('./routes/users');
 
@@ -18,6 +19,8 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -43,6 +46,8 @@ app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
 app.use((req, res) => res.status(404).send({ message: 'Не найдено' }));
+
+app.use(errorLogger);
 
 app.use(errors());
 
